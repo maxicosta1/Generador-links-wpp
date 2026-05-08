@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador WhatsApp</title>
+</head>
+<body>
+
+  <h2>Generador de links de WhatsApp</h2>
+
+  <textarea id="numeros" rows="12" cols="60" placeholder="Pegá los números acá, uno por línea"></textarea>
+
+  <br><br>
+
+  <textarea id="mensaje" rows="5" cols="60">Hola, ¿cómo va? Estuve viendo el estudio y creo que podrían beneficiarse muchísimo con una web más moderna.</textarea>
+
+  <br><br>
+
+  <button onclick="generarLinks()">Generar links</button>
+
+  <h3>Links generados:</h3>
+  <div id="resultado"></div>
+
+  <script>
+    function generarLinks() {
+      const numeros = document.getElementById("numeros").value.split("\n");
+      const mensaje = encodeURIComponent(document.getElementById("mensaje").value);
+      const resultado = document.getElementById("resultado");
+
+      resultado.innerHTML = "";
+
+      numeros.forEach(linea => {
+        let numero = linea.trim().split(" ")[0];
+
+        if (numero !== "") {
+          // Quita el 0 inicial y agrega código Argentina + WhatsApp
+          if (numero.startsWith("0")) {
+            numero = numero.substring(1);
+          }
+
+          const numeroFinal = "549" + numero;
+          const link = `https://wa.me/${numeroFinal}?text=${mensaje}`;
+
+          resultado.innerHTML += `
+            <p>
+              <a href="${link}" target="_blank">${link}</a>
+            </p>
+          `;
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
