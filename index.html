@@ -1,55 +1,210 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Generador WhatsApp</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Generador de Links WhatsApp</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#0f1115;
+    color:white;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
+}
+
+.container{
+    width:100%;
+    max-width:1000px;
+    background:#171a21;
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:20px;
+    padding:30px;
+}
+
+h1{
+    margin-bottom:20px;
+    font-size:32px;
+}
+
+p{
+    color:#a0a0a0;
+    margin-bottom:20px;
+}
+
+textarea{
+    width:100%;
+    height:250px;
+    resize:none;
+    border:none;
+    outline:none;
+    border-radius:15px;
+    padding:20px;
+    background:#0f1115;
+    color:white;
+    font-size:15px;
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    border:none;
+    outline:none;
+    border-radius:12px;
+    background:#0f1115;
+    color:white;
+    margin-bottom:20px;
+    font-size:15px;
+}
+
+button{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:14px;
+    background:#9f5cff;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.3s;
+    margin-bottom:25px;
+}
+
+button:hover{
+    opacity:0.85;
+}
+
+.resultados{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.card{
+    background:#0f1115;
+    padding:15px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,0.06);
+}
+
+.card h3{
+    font-size:16px;
+    margin-bottom:10px;
+}
+
+.card a{
+    color:#9f5cff;
+    text-decoration:none;
+    word-break:break-all;
+}
+
+</style>
 </head>
 <body>
 
-  <h2>Generador de links de WhatsApp</h2>
+<div class="container">
 
-  <textarea id="numeros" rows="12" cols="60" placeholder="Pegá los números acá, uno por línea"></textarea>
+    <h1>Generador de WhatsApp</h1>
 
-  <br><br>
+    <p>
+        Pegá la lista de números y nombres.
+    </p>
 
-  <textarea id="mensaje" rows="5" cols="60">Hola, ¿cómo va? Estuve viendo el estudio y creo que podrían beneficiarse muchísimo con una web más moderna.</textarea>
+    <textarea id="lista" placeholder="Ejemplo:
+011 15-3813-0404 (Casa Joseph Libertador)
+0223 493-7841 (Las Heras Hotel)
+"></textarea>
 
-  <br><br>
+    <input 
+        type="text" 
+        id="mensaje" 
+        placeholder="Mensaje para WhatsApp"
+    >
 
-  <button onclick="generarLinks()">Generar links</button>
+    <button onclick="generarLinks()">
+        Generar Links
+    </button>
 
-  <h3>Links generados:</h3>
-  <div id="resultado"></div>
+    <div class="resultados" id="resultados"></div>
 
-  <script>
-    function generarLinks() {
-      const numeros = document.getElementById("numeros").value.split("\n");
-      const mensaje = encodeURIComponent(document.getElementById("mensaje").value);
-      const resultado = document.getElementById("resultado");
+</div>
 
-      resultado.innerHTML = "";
+<script>
 
-      numeros.forEach(linea => {
-        let numero = linea.trim().split(" ")[0];
+function limpiarNumero(numero) {
 
-        if (numero !== "") {
-          // Quita el 0 inicial y agrega código Argentina + WhatsApp
-          if (numero.startsWith("0")) {
-            numero = numero.substring(1);
-          }
+    return numero
+        .replace(/\(.*?\)/g, '')
+        .replace(/\D/g, '');
 
-          const numeroFinal = "549" + numero;
-          const link = `https://wa.me/${numeroFinal}?text=${mensaje}`;
+}
 
-          resultado.innerHTML += `
-            <p>
-              <a href="${link}" target="_blank">${link}</a>
-            </p>
-          `;
+function extraerNombre(linea){
+
+    const match = linea.match(/\((.*?)\)/);
+
+    return match ? match[1] : "Sin nombre";
+
+}
+
+function generarLinks(){
+
+    const lista = document.getElementById("lista").value;
+    const mensaje = document.getElementById("mensaje").value;
+
+    const resultados = document.getElementById("resultados");
+
+    resultados.innerHTML = "";
+
+    const lineas = lista.split("\n");
+
+    lineas.forEach(linea => {
+
+        if(linea.trim() === "") return;
+
+        const nombre = extraerNombre(linea);
+
+        let numero = limpiarNumero(linea);
+
+        if(numero.length < 8) return;
+
+        // AGREGA 54 SI NO EXISTE
+        if(!numero.startsWith("54")){
+            numero = "54" + numero;
         }
-      });
-    }
-  </script>
+
+        const link = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+
+        resultados.innerHTML += `
+        
+        <div class="card">
+            <h3>${nombre}</h3>
+
+            <a href="${link}" target="_blank">
+                ${link}
+            </a>
+        </div>
+
+        `;
+
+    });
+
+}
+
+</script>
 
 </body>
 </html>
